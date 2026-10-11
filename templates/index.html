@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#24483e">
+  <title>Blue Sky Airlines — Find your next escape</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="site-header" id="top">
+    <a class="brand" href="{{ url_for('index') }}" aria-label="Blue Sky Airlines home">
+      <span class="brand-mark" aria-hidden="true">B</span>
+      <span>blue<span class="brand-light">sky</span><small>A I R L I N E S</small></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#flights">Explore</a>
+      <a href="#book">Book a flight</a>
+      <a href="#manage">Manage booking</a>
+    </nav>
+    <a class="header-cta" href="#book">Start your journey <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR NEXT CHAPTER STARTS HERE</div>
+        <h1>Somewhere<br>better is <span>closer.</span></h1>
+        <p>Thoughtful journeys between the places you love. Pick a destination and let the good part begin.</p>
+        <a class="button button-light" href="#flights">Find your flight <span aria-hidden="true">↓</span></a>
+        <div class="hero-footnote"><span class="mini-avatar">✦</span> A little more wonder in every mile</div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="sun"></div>
+        <div class="flight-path"></div>
+        <div class="plane">✈</div>
+        <div class="hero-destination">
+          <span>YOUR NEXT STOP</span>
+          <strong>Somewhere<br>wonderful.</strong>
+          <span class="destination-coordinates">19° 05' N &nbsp; 72° 52' E</span>
+        </div>
+        <div class="art-caption"><span>✦</span> THE WORLD, A LITTLE CLOSER</div>
+      </div>
+      <div class="hero-index"><span>01</span> / 03</div>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" role="status" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <span aria-hidden="true">{% if category == "success" %}✓{% else %}!{% endif %}</span>
+              {{ message }}
+              <button type="button" class="flash-close" aria-label="Dismiss notification">×</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="intro section-wrap">
+      <div>
+        <div class="eyebrow eyebrow-dark">THE BLUE SKY WAY</div>
+        <h2>Good journeys<br>feel <em>effortless.</em></h2>
+      </div>
+      <p>Whether it’s a spontaneous escape or a long-awaited visit, we make getting there feel like part of the story.</p>
+      <div class="intro-stats">
+        <div><strong>04</strong><span>LOCAL DESTINATIONS</span></div>
+        <div><strong>05</strong><span>DAILY DEPARTURE TIMES</span></div>
+      </div>
+    </section>
+
+    <section class="flight-section" id="flights">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow eyebrow-dark">A BETTER WAY TO GET THERE</div>
+            <h2>Find your <em>flight.</em></h2>
+          </div>
+          <span class="section-number">SAMPLE SCHEDULE · 01 — EXPLORE</span>
+        </div>
+
+        <div class="search-card">
+          <form action="{{ url_for('index') }}" method="get" class="search-form">
+            <label class="field">
+              <span>FROM</span>
+              <select name="boarding" required>
+                <option value="">Choose a city</option>
+                {% for airport in airports %}
+                  <option value="{{ airport }}" {% if search_values.boarding == airport %}selected{% endif %}>{{ airport }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <span class="route-swap" aria-hidden="true">↔</span>
+            <label class="field">
+              <span>TO</span>
+              <select name="destination" required>
+                <option value="">Choose a city</option>
+                {% for airport in airports %}
+                  <option value="{{ airport }}" {% if search_values.destination == airport %}selected{% endif %}>{{ airport }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="field field-day">
+              <span>WHEN</span>
+              <select name="day" required>
+                <option value="">Choose a day</option>
+                {% for day in days %}
+                  <option value="{{ day }}" {% if search_values.day == day %}selected{% endif %}>{{ day }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <button class="button button-primary" type="submit">Search flights <span aria-hidden="true">→</span></button>
+          </form>
+        </div>
+
+        {% if search_performed and search_values.boarding and search_values.destination and search_values.day %}
+          <div class="results-heading">
+            <div>
+              <span class="eyebrow eyebrow-dark">YOUR ROUTE</span>
+              <h3>{{ search_values.boarding }} <span aria-hidden="true">→</span> {{ search_values.destination }}</h3>
+            </div>
+            <span>{{ search_values.day }}</span>
+          </div>
+          {% if flights %}
+            <div class="flight-results">
+              {% for flight in flights %}
+                <article class="flight-result">
+                  <div class="flight-logo">BS</div>
+                  <div class="flight-route">
+                    <strong>{{ flight.departure_time }}</strong>
+                    <span>{{ flight.boarding }}</span>
+                  </div>
+                  <div class="flight-duration"><span>DIRECT</span><i></i><span>{{ flight.flight_code }}</span></div>
+                  <div class="flight-route">
+                    <strong>{{ flight.destination }}</strong>
+                    <span>{{ flight.day }} · travel day</span>
+                  </div>
+                  <a href="{{ url_for('index', boarding=flight.boarding, destination=flight.destination, day=flight.day, time=flight.departure_time, _anchor='book') }}" class="button button-outline">Choose flight <span aria-hidden="true">→</span></a>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <span aria-hidden="true">✦</span>
+              <div><strong>No scheduled flights on this route yet.</strong><p>Try another day or destination to explore our current services.</p></div>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="booking-section section-wrap" id="book">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow eyebrow-dark">MAKE IT OFFICIAL</div>
+          <h2>Book your <em>seat.</em></h2>
+        </div>
+        <span class="section-number">02 — RESERVE</span>
+      </div>
+      <div class="booking-layout">
+        <div class="booking-aside">
+          <div class="aside-icon">✦</div>
+          <h3>One small step<br>to <em>somewhere new.</em></h3>
+          <p>Choose your route and cabin. Your confirmed booking is saved in Firestore; live seat inventory and payment are not connected.</p>
+          <div class="aside-note"><span>01</span><p>Have your booking reference handy to manage or download your ticket later.</p></div>
+        </div>
+        <form class="booking-form" action="{{ url_for('book') }}" method="post">
+          <div class="form-title"><strong>Flight details</strong><span>ALL FIELDS REQUIRED</span></div>
+          <div class="form-grid">
+            <label class="field">
+              <span>FROM</span>
+              <select name="boarding" required>
+                {% for airport in airports %}
+                  <option value="{{ airport }}" {% if search_values.boarding == airport %}selected{% endif %}>{{ airport }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="field">
+              <span>TO</span>
+              <select name="destination" required>
+                {% for airport in airports %}
+                  <option value="{{ airport }}" {% if search_values.destination == airport %}selected{% endif %}>{{ airport }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="field">
+              <span>TRAVEL DAY</span>
+              <select name="day" required>
+                {% for day in days %}
+                  <option value="{{ day }}" {% if search_values.day == day %}selected{% endif %}>{{ day }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="field">
+              <span>DEPARTURE TIME</span>
+              <select name="departure_time" required>
+                {% for time in times %}<option value="{{ time }}" {% if search_values.time == time %}selected{% endif %}>{{ time }}</option>{% endfor %}
+              </select>
+            </label>
+            <label class="field">
+              <span>CABIN</span>
+              <select name="seat_class" required>
+                {% for value, label in classes.items() %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+              </select>
+            </label>
+            <label class="field">
+              <span>LAST 4 DIGITS OF CITIZENSHIP NUMBER</span>
+              <input type="text" name="citizen_last4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="e.g. 4821" autocomplete="off" required>
+            </label>
+          </div>
+          <div class="form-footer">
+            <span><i class="secure-dot"></i> Your details are used only to manage this booking.</span>
+            <button class="button button-primary" type="submit">Confirm booking <span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="manage-section" id="manage">
+      <div class="section-wrap">
+        <div class="manage-header">
+          <div>
+            <div class="eyebrow">YOUR TRIP, YOUR WAY</div>
+            <h2>Plans can <em>change.</em></h2>
+            <p>Look up your booking to download a boarding pass or cancel your reservation.</p>
+          </div>
+          <div class="manage-stamp" aria-hidden="true">BS<br><span>✦</span></div>
+        </div>
+        {% if recent_booking_ref %}
+          <div class="booking-reference-panel" role="status">
+            <span class="booking-check" aria-hidden="true">✓</span>
+            <div class="booking-confirmation-copy">
+              <strong>Your booking is confirmed</strong>
+              <span>Save this reference. Use it with the same last four digits of your citizenship number.</span>
+            </div>
+            <code class="booking-reference">{{ recent_booking_ref }}</code>
+            <button type="button" class="copy-reference" data-copy-reference="{{ recent_booking_ref }}">Copy reference</button>
+          </div>
+        {% endif %}
+        <div class="manage-cards">
+          <form class="manage-card" action="{{ url_for('ticket') }}" method="post">
+            <div class="manage-card-top"><span class="manage-icon">↓</span><span>01 / TICKET</span></div>
+            <h3>Download your ticket</h3>
+            <p>Your boarding pass, ready when you are.</p>
+            <label class="field">
+              <span>BOOKING REFERENCE</span>
+              <input type="text" name="booking_ref" value="{{ recent_booking_ref }}" placeholder="e.g. BS12AB34CD" maxlength="10" required>
+            </label>
+            <label class="field">
+              <span>LAST 4 DIGITS OF CITIZENSHIP NUMBER</span>
+              <input type="text" name="citizen_last4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="0000" autocomplete="off" required>
+            </label>
+            <button class="button button-light" type="submit">Get boarding pass <span aria-hidden="true">→</span></button>
+          </form>
+          <form class="manage-card manage-card-cancel" action="{{ url_for('cancel') }}" method="post">
+            <div class="manage-card-top"><span class="manage-icon">↗</span><span>02 / CHANGE OF PLANS</span></div>
+            <h3>Cancel a booking</h3>
+            <p>Enter your details and we’ll take care of the rest.</p>
+            <label class="field">
+              <span>BOOKING REFERENCE</span>
+              <input type="text" name="booking_ref" value="{{ recent_booking_ref }}" placeholder="e.g. BS12AB34CD" maxlength="10" required>
+            </label>
+            <label class="field">
+              <span>LAST 4 DIGITS OF CITIZENSHIP NUMBER</span>
+              <input type="text" name="citizen_last4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="0000" autocomplete="off" required>
+            </label>
+            <button class="button button-outline-light" type="submit">Find my booking <span aria-hidden="true">→</span></button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand brand-footer" href="{{ url_for('index') }}">
+      <span class="brand-mark" aria-hidden="true">B</span>
+      <span>blue<span class="brand-light">sky</span><small>A I R L I N E S</small></span>
+    </a>
+    <span>MADE FOR THE LOVE OF GETTING THERE.</span>
+    <a href="#top" class="back-top">Back to top ↑</a>
+  </footer>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

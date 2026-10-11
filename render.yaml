@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: blue-sky-airlines
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn new:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found — Blue Sky Airlines</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="manage-section">
+    <div class="section-wrap">
+      <div class="eyebrow">OFF COURSE, FOR A MOMENT</div>
+      <h1>We can't find that page.</h1>
+      <p>The page may have moved. Let's get you back to your journey.</p>
+      <a class="button button-light" href="{{ url_for('index') }}">Back to Blue Sky <span aria-hidden="true">→</span></a>
+    </div>
+  </main>
+</body>
+</html>
